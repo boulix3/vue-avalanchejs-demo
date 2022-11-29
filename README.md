@@ -1,46 +1,79 @@
-# vue-project
+# vue-avalanchejs-demo
+How to configure a new vuejs app to use avalanchejs
 
-This template should help get you started developing with Vue 3 in Vite.
+## TLDR
+This [Commit diff](https://github.com/boulix3/vue-avalanchejs-demo/commit/29607253d301f9d28ba8415687084e315d9fe165) contains everything needed.
 
-## Recommended IDE Setup
-
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur) + [TypeScript Vue Plugin (Volar)](https://marketplace.visualstudio.com/items?itemName=Vue.vscode-typescript-vue-plugin).
-
-## Type Support for `.vue` Imports in TS
-
-TypeScript cannot handle type information for `.vue` imports by default, so we replace the `tsc` CLI with `vue-tsc` for type checking. In editors, we need [TypeScript Vue Plugin (Volar)](https://marketplace.visualstudio.com/items?itemName=Vue.vscode-typescript-vue-plugin) to make the TypeScript language service aware of `.vue` types.
-
-If the standalone TypeScript plugin doesn't feel fast enough to you, Volar has also implemented a [Take Over Mode](https://github.com/johnsoncodehk/volar/discussions/471#discussioncomment-1361669) that is more performant. You can enable it by the following steps:
-
-1. Disable the built-in TypeScript Extension
-    1) Run `Extensions: Show Built-in Extensions` from VSCode's command palette
-    2) Find `TypeScript and JavaScript Language Features`, right click and select `Disable (Workspace)`
-2. Reload the VSCode window by running `Developer: Reload Window` from the command palette.
-
-## Customize configuration
-
-See [Vite Configuration Reference](https://vitejs.dev/config/).
-
-## Project Setup
+### Create vue app
 
 ```sh
-npm install
+npm create vue@3
 ```
 
-### Compile and Hot-Reload for Development
+### Install avalanchejs and configure browserify
 
+```sh
+npm install avalanche browserify
+```
+
+Modify vite.config.ts
+```ts
+// https://vitejs.dev/config/
+export default defineConfig({
+  plugins: [vue()],
+  resolve: {
+    alias: {
+      'util': "util/", 
+      'buffer': "buffer/",
+      'stream': 'stream-browserify',
+      '@': fileURLToPath(new URL('./src', import.meta.url))
+    }
+  },
+  define: {
+    global: {},
+    process: { env: {} },
+  }
+})
+```
+
+
+
+### Quick test
+
+Modify components/HelloWorld.vue and use avalanchejs to make keys 
+
+```vue
+<script setup lang="ts">
+import { Avalanche } from "avalanche/dist"
+import type { AVMAPI, KeyChain, KeyPair } from 'avalanche/dist/apis/avm'
+const ip: string = "localhost"
+const port: number = 9650
+const protocol: string = "http"
+const networkID: number = 1337
+const avalanche: Avalanche = new Avalanche(ip, port, protocol, networkID)
+const xchain: AVMAPI = avalanche.XChain()
+const keychain: KeyChain = xchain.keyChain()
+const keypair: KeyPair = keychain.makeKey()
+function GetKeyPair(): string {
+  var address = keypair.getAddressString();
+  var publicKey = keypair.getPublicKeyString();
+  var privateKey = keypair.getPrivateKeyString();
+  return address + " - " + publicKey + " - " + privateKey;
+}
+</script>
+
+<template>
+  <div class="greetings">
+    <h1>Avalanche JS MakeKey test</h1>
+    <h3>{{ GetKeyPair() }}</h3>
+  </div>
+</template>
+```
+
+Run the app in dev mode and you should have something like this.
 ```sh
 npm run dev
 ```
 
-### Type-Check, Compile and Minify for Production
+![Screenshot](screenshot.png)
 
-```sh
-npm run build
-```
-
-### Lint with [ESLint](https://eslint.org/)
-
-```sh
-npm run lint
-```
