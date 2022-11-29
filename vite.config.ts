@@ -8,7 +8,14 @@ export default defineConfig({
   plugins: [vue()],
   resolve: {
     alias: {
+      'util': "util/", 
+      'buffer': "buffer/",
+      'stream': 'stream-browserify',
       '@': fileURLToPath(new URL('./src', import.meta.url))
     }
+  },
+  define: {
+    global: {},
+    process: { env: {} },
   }
 })

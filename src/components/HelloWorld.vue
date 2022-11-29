@@ -1,17 +1,26 @@
 <script setup lang="ts">
-defineProps<{
-  msg: string
-}>()
+import { Avalanche } from "avalanche/dist"
+import type { AVMAPI, KeyChain, KeyPair } from 'avalanche/dist/apis/avm'
+const ip: string = "localhost"
+const port: number = 9650
+const protocol: string = "http"
+const networkID: number = 1337
+const avalanche: Avalanche = new Avalanche(ip, port, protocol, networkID)
+const xchain: AVMAPI = avalanche.XChain()
+const keychain: KeyChain = xchain.keyChain()
+const keypair: KeyPair = keychain.makeKey()
+function GetKeyPair(): string {
+  var address = keypair.getAddressString();
+  var publicKey = keypair.getPublicKeyString();
+  var privateKey = keypair.getPrivateKeyString();
+  return address + " - " + publicKey + " - " + privateKey;
+}
 </script>
 
 <template>
   <div class="greetings">
-    <h1 class="green">{{ msg }}</h1>
-    <h3>
-      You’ve successfully created a project with
-      <a href="https://vitejs.dev/" target="_blank" rel="noopener">Vite</a> +
-      <a href="https://vuejs.org/" target="_blank" rel="noopener">Vue 3</a>. What's next?
-    </h3>
+    <h1>Avalanche JS MakeKey test</h1>
+    <h3>{{ GetKeyPair() }}</h3>
   </div>
 </template>
 
