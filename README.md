@@ -16,7 +16,7 @@ npm create vue@3
 npm install avalanche browserify
 ```
 
-Modify vite.config.ts
+Update vite.config.ts
 ```ts
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -28,15 +28,24 @@ export default defineConfig({
       'stream': 'stream-browserify',
       '@': fileURLToPath(new URL('./src', import.meta.url))
     }
-  },
-  define: {
-    global: {},
-    process: { env: {} },
   }
 })
 ```
 
-
+Update index.html (workaround - insert in <head>)
+```html
+  <script>
+    if (!window.global) {
+      window.global = {};
+    }
+    if (!window.process) {
+      window.process = {};
+    }
+    if (!window.process.env) {
+      window.process.env = {};
+    }
+  </script>
+```
 
 ### Quick test
 
