@@ -13,9 +13,5 @@ export default defineConfig({
       'stream': 'stream-browserify',
       '@': fileURLToPath(new URL('./src', import.meta.url))
     }
-  },
-  define: {
-    global: {},
-    process: { env: {} },
   }
 })
